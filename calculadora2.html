@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, inicial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="layoutcalculadora.css" />
+  <title>calculadora</title>
+</head>
+
+<body>
+  <div class="tudo">
+    <h1 class="h1">CALCULADORA</h1>
+  </div>
+  <div class="calculadora">
+    <textarea id="vizualizador" disabled></textarea>
+    <p id="resultado"></p>
+    <table>
+      <tr>
+        <td><button class="botao" onclick="clicarOperador('/')">/</button></td>
+        <td><button class="botao" onclick="clicarOperador('*')">X</button></td>
+        <td><button class="botao" onclick="clicarOperador('%')">%</button></td>
+        <td><button class="botao" onclick="limpar()">AC</button></td>
+      </tr>
+      <tr>
+        <td><button class="botao" onclick="clicar('7')">7</button></td>
+        <td><button class="botao" onclick="clicar('8')">8</button></td>
+        <td><button class="botao" onclick="clicar('9')">9</button></td>
+        <td><button class="botao" onclick="clicarOperador('-')">-</button></td>
+      </tr>
+      <tr>
+        <td><button class="botao" onclick="clicar('4')">4</button></td>
+        <td><button class="botao" onclick="clicar('5')">5</button></td>
+        <td><button class="botao" onclick="clicar('6')">6</button></td>
+        <td><button class="botao" onclick="clicarOperador('+')">+</button></td>
+      </tr>
+      <tr>
+        <td><button class="botao" onclick="clicar('1')">1</button></td>
+        <td><button class="botao" onclick="clicar('2')">2</button></td>
+        <td><button class="botao" onclick="clicar('3')">3</button></td>
+        <td rowspan="2"><button class="botao" style="height: 101px" onclick="clicarOperador('=')">=</button></td>
+      </tr>
+      <tr>
+        <td colspan="2"><button class="botao" style="width: 100px" onclick="clicar('0')">0</button></td>
+        <td><button class="botao" onclick="clicar('.')">.</button></td>
+      </tr>
+    </table>
+  </div>
+  <script>
+    let topo = 0;
+    let topooperador = 0;
+    var digitado;
+    const size = 100;
+    var numOpe = new Array(size);
+    var num = new Array(size);
+    var numero;
+
+
+    function clicar(x) {
+      digitado = document.getElementById("resultado").innerHTML = x;
+
+      if (topo < size) {
+        num[topo] = x;
+        topo++;
+      } else {
+        alert("Pilha estourada!");
+      }
+    }
+    function clicarOperador(x) {
+      var operador = document.getElementById("vizualizador").innerHTML;
+      document.getElementById("vizualizador").innerHTML = operador + digitado + "\n" + x;
+      if (topooperador < size) {
+        numOpe[topooperador] = x;
+        topooperador++;
+
+        if (x === "=") {
+          igual();
+        }
+      } else {
+        alert("Pilha estourada!");
+      }
+      document.getElementById("resultado").innerHTML = " ";
+    }
+
+    function limpar() {
+      document.getElementById("resultado").innerHTML = " ";
+      document.getElementById("vizualizador").innerHTML = " ";
+    }
+
+    function vezes(a, b) {
+      return +a * +b;
+    }
+    function subtracao(a, b) {
+      return +a - +b;
+    }
+    function adicao(a, b) {
+
+      // mesma coisa que Number(a) + Number(b) -> transforma string para number
+      return +a + +b;
+    }
+    function modulo(a) {
+      if (+a > 0) {
+        return a;
+      } else {
+        return -a;
+      }
+      // return a > 0 ? a : -a;
+      function dividir(a, b) {
+        return +a / +b;
+      }
+    }
+    function igual() {
+      let operador = document.getElementById("vizualizador").innerHTML;
+
+      const indexOfVezes = [];
+      const indexOfMais = [];
+      const indexOfDividir = [];
+      const indexOfMenos = [];
+      const indexOfModulo = [];
+
+      for (let i = 0; i <= numOpe.length; i += 1) {
+        if (numOpe[i] === "*") {
+          indexOfVezes.push(i);
+        }
+        if (numOpe[i] === "+") {
+          indexOfMais.push(i);
+        }
+        if (numOpe[i] === "-") {
+          indexOfMenos.push(i);
+        }
+        if (numOpe[i] === "/") {
+          indexOfDividir.push(i);
+        }
+        if (numOpe[i] === "%") {
+          indexOfModulo.push(i);
+        }
+      }
+
+      let soma = 0;
+
+      if (indexOfVezes.length > 0) {
+        for (let j = 0; j <= indexOfVezes.length; j += 1) {
+          const indexDoOperador = indexOfVezes[j];
+          const primeiroNum = num[indexDoOperador];
+          const segundoNum = num[indexDoOperador + 1]
+          total = vezes(num[indexDoOperador], num[indexDoOperador + 1]);
+
+          const antesNum = num.slice(0, indexDoOperador);
+          const depoisNum = num.slice(indexDoOperador + 2);
+          num = [...antesNum, total, ...depoisNum];
+
+          const antesOpe = numOpe.slice(0, j);
+          const depoisOpe = numOpe.slice(j + 1);
+
+          numOpe = [...antesOpe, ...depoisOpe];
+
+          console.log(numOpe, num);
+
+          soma = numOpe;
+
+        }
+      }
+
+      if (indexOfMais.length > 0) {
+        for (let j = 0; j <= indexOfMais.length; j += 1) {
+          total = adicao(num[j], num[j + 1]);
+
+          const antesNum = num.slice(0, j);
+          const depoisNum = num.slice(j + 2);
+          num = [...antesNum, total, ...depoisNum];
+
+          const antesOpe = numOpe.slice(0, j);
+          const depoisOpe = numOpe.slice(j + 1);
+
+          numOpe = [...antesOpe, ...depoisOpe];
+          console.log(numOpe, num);
+
+          soma = numOpe;
+        }
+      }
+      console.log(num);
+    }
+  </script>
+</body>
+
+</html>
